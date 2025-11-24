@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 export const BrainLogo: React.FC = () => {
   // Path definition for a stylized brain circuit
@@ -7,7 +7,7 @@ export const BrainLogo: React.FC = () => {
   const circuitLeft = "M40 55 L30 55 M35 70 L25 70 M40 90 L30 100";
   const circuitRight = "M60 55 L70 55 M65 70 L75 70 M60 90 L70 100";
   
-  const draw = {
+  const draw: Variants = {
     hidden: { pathLength: 0, opacity: 0 },
     visible: (i: number) => ({
       pathLength: 1,

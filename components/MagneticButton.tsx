@@ -4,10 +4,16 @@ import { motion } from 'framer-motion';
 interface MagneticButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  accentColor?: 'cyan' | 'orange';
+  theme?: 'tech' | 'nature';
+  variant?: 'primary' | 'secondary';
 }
 
-export const MagneticButton: React.FC<MagneticButtonProps> = ({ children, onClick, accentColor = 'cyan' }) => {
+export const MagneticButton: React.FC<MagneticButtonProps> = ({ 
+  children, 
+  onClick, 
+  theme = 'tech',
+  variant = 'primary' 
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -16,16 +22,28 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({ children, onClic
     const { height, width, left, top } = ref.current?.getBoundingClientRect() || { height: 0, width: 0, left: 0, top: 0 };
     const middleX = clientX - (left + width / 2);
     const middleY = clientY - (top + height / 2);
-    setPosition({ x: middleX * 0.2, y: middleY * 0.2 }); // Magnetic strength
+    setPosition({ x: middleX * 0.2, y: middleY * 0.2 });
   };
 
   const reset = () => {
     setPosition({ x: 0, y: 0 });
   };
 
-  const borderColor = accentColor === 'cyan' ? 'group-hover:border-cyan-400' : 'group-hover:border-orange-400';
-  const textColor = accentColor === 'cyan' ? 'group-hover:text-cyan-400' : 'group-hover:text-orange-400';
-  const glowColor = accentColor === 'cyan' ? 'bg-cyan-500' : 'bg-orange-500';
+  // Styles based on theme and variant
+  let borderColor = '';
+  let textColor = '';
+  let glowColor = '';
+
+  if (theme === 'tech') {
+    borderColor = variant === 'primary' ? 'group-hover:border-accent-cyan' : 'group-hover:border-accent-orange';
+    textColor = variant === 'primary' ? 'group-hover:text-accent-cyan' : 'group-hover:text-accent-orange';
+    glowColor = variant === 'primary' ? 'bg-accent-cyan' : 'bg-accent-orange';
+  } else {
+    // Nature Theme
+    borderColor = variant === 'primary' ? 'group-hover:border-accent-emerald' : 'group-hover:border-accent-lime';
+    textColor = variant === 'primary' ? 'group-hover:text-accent-emerald' : 'group-hover:text-accent-lime';
+    glowColor = variant === 'primary' ? 'bg-accent-emerald' : 'bg-accent-lime';
+  }
 
   return (
     <motion.div
@@ -37,7 +55,6 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({ children, onClic
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
       onClick={onClick}
     >
-      {/* Button Outline */}
       <div className={`
         relative overflow-hidden
         px-8 py-3 rounded-full 

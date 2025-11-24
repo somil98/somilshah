@@ -1,21 +1,23 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 export const SolarSystem: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
 
-  // Mouse position values for the tilt effect
+  // Position values for the tilt effect (-0.5 to 0.5 range)
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // Smooth out the mouse values
-  const mouseX = useSpring(x, { stiffness: 150, damping: 15 });
-  const mouseY = useSpring(y, { stiffness: 150, damping: 15 });
+  // Smooth out the raw input values
+  const springConfig = { stiffness: 150, damping: 15 };
+  const smoothX = useSpring(x, springConfig);
+  const smoothY = useSpring(y, springConfig);
 
-  // Map mouse position to rotation degrees (tilt effect)
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [15, -15]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-15, 15]);
+  // Map normalized position to rotation degrees
+  const rotateX = useTransform(smoothY, [-0.5, 0.5], [15, -15]); // Tilt X (Up/Down)
+  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-15, 15]); // Tilt Y (Left/Right)
 
+  // 1. Mouse Interaction Handler
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
@@ -35,6 +37,42 @@ export const SolarSystem: React.FC = () => {
     x.set(0);
     y.set(0);
   };
+
+  // 2. Gyroscope Interaction Handler
+  useEffect(() => {
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      // Return if no sensor data
+      if (e.gamma === null || e.beta === null) return;
+
+      // Define sensitivity range (degrees)
+      const MAX_TILT = 30;
+      
+      // GAMMA: Left-to-Right tilt [-90, 90]
+      // We clamp it to -30 to 30 for subtle effect
+      const gamma = Math.max(-MAX_TILT, Math.min(MAX_TILT, e.gamma));
+      const normX = gamma / (MAX_TILT * 2); // Map to -0.5 to 0.5
+
+      // BETA: Front-to-Back tilt [-180, 180]
+      // A phone is usually held at ~45 degrees. We center the effect there.
+      const RESTING_ANGLE = 45;
+      const beta = Math.max(RESTING_ANGLE - MAX_TILT, Math.min(RESTING_ANGLE + MAX_TILT, e.beta));
+      const normY = (beta - RESTING_ANGLE) / (MAX_TILT * 2); // Map to -0.5 to 0.5
+
+      x.set(normX);
+      y.set(normY);
+    };
+
+    // Check availability and add listener
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+
+    return () => {
+      if (window.DeviceOrientationEvent) {
+        window.removeEventListener('deviceorientation', handleOrientation);
+      }
+    };
+  }, [x, y]);
 
   // Orbit definitions
   const orbits = [

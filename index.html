@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Somil Shah | AI Lead</title>
+    <title>Somil Shah | Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,10 +23,23 @@
               accent: {
                 cyan: '#22d3ee',
                 orange: '#fb923c',
+                emerald: '#34d399',
+                lime: '#a3e635',
+              },
+              nature: {
+                bg: '#022c22', // Deep Emerald
+                surface: '#064e3b',
               }
             },
             animation: {
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 6s ease-in-out infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              }
             }
           }
         }
@@ -38,20 +51,21 @@
         color: white;
         margin: 0;
         overflow-x: hidden;
+        transition: background-color 0.8s ease-in-out;
       }
       /* Custom scrollbar for webkit */
       ::-webkit-scrollbar {
         width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #0f0f11;
+        background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #27272a;
+        background: rgba(255, 255, 255, 0.2);
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #3f3f46;
+        background: rgba(255, 255, 255, 0.4);
       }
     </style>
   <script type="importmap">
